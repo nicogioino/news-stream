@@ -9,10 +9,7 @@ import static resource.LaNacionResource.*;
 
 public class LaNacionResourceFactory {
 
-    public LaNacionResource generateResource(Element element) {
-        String label = element.attr("title");
-        String link = element.attr("href");
-
-        return laNacionResource(label,link);
+    public LaNacionResource generateResource(String title,String link) {
+        return laNacionResource(title,link);
     }
 }

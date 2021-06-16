@@ -4,10 +4,12 @@ import factories.LaNacionResourceFactory;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import resource.LaNacionResource;
 import resource.Resource;
 
 import java.io.IOException;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,16 +25,13 @@ public class LaNacionResourceProvider implements ResourceProvider {
 
     @Override
     public List<Resource> resources() throws IOException {
-        Document webPage = Jsoup.connect(FRONT_PAGE_URL).get();
-        List<Element> elements = webPage.getElementsByClass("com-title")
-                .stream()
-                .map(Element::getAllElements)
-                .flatMap(List::stream)
-                .collect(Collectors.toList());
-        List<Element> filteredList = elements.stream()
-                .filter(element -> !element.hasClass("com-title") && !element.hasClass("com-volanta"))
-                .collect(Collectors.toList());
-        return filteredList.stream().map(laNacionResourceFactory::generateResource).collect(Collectors.toList());
+        List<Resource> result = new ArrayList<>();
+        Document doc = Jsoup.connect(FRONT_PAGE_URL).get();
+        for (Element e : doc.body().select(".com-title a")) {
+            result.add(laNacionResourceFactory.generateResource(FRONT_PAGE_URL + e.attr("href"), e.text()));
+        }
+        return result;
+
     }
 
     @Override
